@@ -1,0 +1,79 @@
+
+{% extends 'general/main.html' %}
+
+{% block content %}
+<body>
+
+    <!-- Hero Section -->
+    <section class="jumbotron jumbotron-fluid bg-image hero-image  text-center mb-4">
+        <div class="container">
+            <h1 class="display-4 text-body-emphasis">Find your dream home</h1>
+            <p class="lead">Search through thousands of properties for sale or rent.</p>
+            <form class="d-flex justify-content-center">
+                <input class="form-control" type="search" placeholder="Search Properties" aria-label="Search">
+                <button class="btn btn-primary my-2 my-sm-0"  type="submit">Search</button>
+            </form>
+        </div>
+    </section>
+    
+
+    <!-- Featured Listings -->
+    <section class="">
+        <h2 class="text-center mb-4">New Listings</h2>
+        <div class="container-fluid">
+        <div class="row">
+            <!-- Listing Cards will go here -->
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Property Image">
+                    <div class="card-body">
+                        <h5 class="card-title">Property Title</h5>
+                        <p class="card-text">Description of the property goes here.</p>
+                        <a href="" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container-fluid">
+        <div class="row mb-3 p-3 text-center bg-body-secondary justify-content-md-center">
+            <div class="col-md-3">
+                <div class="card" >
+                    <img src="" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Buy a home</h5>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="" class="btn btn-outline-primary mb-3 mt-3">Browse homes</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card" >
+                    <img src="" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Sell a home</h5>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="" class="btn btn-outline-primary mb-3 mt-3">See your options</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card" >
+                    <img src="" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Rent a home</h5>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="" class="btn btn-outline-primary mb-3 mt-3">Find rentals</a>
+                    </div>
+                  </div>
+            </div>
+          </div>
+          </div>
+    </section>
+
+</body>
+
+{% endblock content %}

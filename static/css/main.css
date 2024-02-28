@@ -1,0 +1,4 @@
+.hero-image {
+    background-image: url('../images/hero-section.jpg'); background-size: cover; background-position: top;
+    height: 25rem;
+}
