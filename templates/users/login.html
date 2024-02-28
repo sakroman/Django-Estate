@@ -52,7 +52,7 @@
 
         const formData = new FormData(this);
 
-        fetch('user/login/', {
+        fetch("{% url 'users:login' %}", {
             method: 'POST',
             body: formData,
         })
@@ -67,7 +67,7 @@
                         
                         });
                 } else {
-                    location.reload()
+                    window.location.replace(data.success_url);
                     form.classList.add('was-validated');
                 }
             })

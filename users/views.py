@@ -41,7 +41,7 @@ class LoginPageView(View):
             user = authenticate(request, email=email, password=password)
             if user:
                 login(request, user)
-                return JsonResponse({'success': True })
+                return JsonResponse({'success': True, 'success_url': self.success_url })
             else:
                 return JsonResponse({'success': False, 'message': 'Invalid email or password.'})
         else:
