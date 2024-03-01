@@ -5,5 +5,5 @@ app_name = "estates"
 
 
 urlpatterns = [
-
+    path('property-listings', PropertyListingsView.as_view(), name='listings'),
 ]

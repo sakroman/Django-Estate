@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from estates.models import Estate
+
+admin.site.register(Estate)

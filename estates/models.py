@@ -3,7 +3,10 @@ from users.models import User
 
 
 class Estate(models.Model):
-
+    LISTING_TYPES = (
+        ('sale', 'For Sale'),
+        ('rent', 'For Rent'),
+    )
     PROPERTY_TYPES = (
         ('House', 'House'),
         ('Flat', 'Flat'),
@@ -33,11 +36,12 @@ class Estate(models.Model):
     city = models.CharField(max_length=100)
     zipcode = models.CharField(max_length=20)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    listing_type = models.CharField(max_length=10, choices=LISTING_TYPES)
     bedrooms = models.IntegerField()
     bathrooms = models.IntegerField()
     garage = models.BooleanField()
-    floor_area_sqm = models.DecimalField(max_digits=10, decimal_places=2)
-    land_area_sqm = models.DecimalField(max_digits=10, decimal_places=2)
+    floor_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    land_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
 
     photo_main = models.ImageField(upload_to='photos/%Y/%m/%d/')
     photo_1 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
@@ -48,7 +52,6 @@ class Estate(models.Model):
     photo_6 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
     is_published = models.BooleanField()
     list_date = models.DateTimeField(auto_now_add=True)
-    agent = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
 

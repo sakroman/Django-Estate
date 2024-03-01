@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.humanize',
     'users',
     'estates',
     'django.contrib.staticfiles',
@@ -113,6 +114,12 @@ USE_TZ = True
 AUTH_USER_MODEL = "users.User"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+
+# Define the directory where uploaded media files will be stored
+MEDIA_ROOT = BASE_DIR / ''
+
+# Define the URL pattern for serving media files
+MEDIA_URL = '//'
 
 STATIC_URL = 'static/'
 
