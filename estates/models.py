@@ -30,16 +30,18 @@ class Estate(models.Model):
 
 
     property_type = models.CharField(max_length=100, choices=PROPERTY_TYPES)
-    title = models.CharField(max_length=100)
     description = models.TextField()
     address = models.CharField(max_length=300)
     city = models.CharField(max_length=100)
     zipcode = models.CharField(max_length=20)
+    title = models.CharField(max_length=300)
+
     price = models.DecimalField(max_digits=10, decimal_places=2)
     listing_type = models.CharField(max_length=10, choices=LISTING_TYPES)
     bedrooms = models.IntegerField()
     bathrooms = models.IntegerField()
     garage = models.BooleanField()
+    garden = models.BooleanField()
     floor_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     land_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
 
@@ -54,6 +56,10 @@ class Estate(models.Model):
     list_date = models.DateTimeField(auto_now_add=True)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
+
+    def save(self, *args, **kwargs):
+        self.title = f"{self.address} {self.city} {self.zipcode}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
