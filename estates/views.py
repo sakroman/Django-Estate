@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 from estates.models import Estate
 
 class PropertyListingsView(ListView):
@@ -73,3 +73,8 @@ class PropertyListingsView(ListView):
         context['property_types'] = Estate.PROPERTY_TYPES
         context['listing_types'] = Estate.LISTING_TYPES
         return context
+
+class PropertyDetailsView(DetailView):
+    model = Estate
+    template_name = 'estates/listing_details.html'
+    context_object_name = 'user'

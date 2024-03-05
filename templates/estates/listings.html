@@ -111,6 +111,7 @@
         <div id="listingsContainer" class="col-md-9">
             {% if listings %}
             {% for listing in listings %}
+            <a href="{% url 'estates:property_details' listing.pk %}" class="estate-card-link">
             <div id="{{listing.id}}" class="row border rounded mb-4 overflow-hidden">
                 <div class="col-md-7 p-0 overflow-hidden">
                     <div id="carousel{{ listing.id }}" class="carousel slide">
@@ -165,6 +166,7 @@
                     </div>
                 </div>
             </div>
+            </a>
             {% endfor %}
             {% else %}
             <p>No listings found.</p>
