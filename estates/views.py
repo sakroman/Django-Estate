@@ -36,13 +36,19 @@ class PropertyListingsView(ListView):
             queryset = queryset.filter(listing_type=listing_type)
             
         if min_bedrooms:
-            queryset = queryset.filter(bedrooms__gte=min_bedrooms)
+            if min_bedrooms == '5+':
+                queryset = queryset.filter(bedrooms__gte=4)
+            else:
+                queryset = queryset.filter(bedrooms__gte=min_bedrooms)
         
         if max_bedrooms:
             queryset = queryset.filter(bedrooms__lte=max_bedrooms)
 
         if min_bathrooms:
-            queryset = queryset.filter(bathrooms__gte=min_bathrooms)
+            if min_bathrooms == '4+':
+                queryset = queryset.filter(bathrooms__gte=4)
+            else:
+                queryset = queryset.filter(bathrooms__gte=min_bathrooms)
         
         if max_bathrooms:
             queryset = queryset.filter(bathrooms__lte=max_bathrooms)

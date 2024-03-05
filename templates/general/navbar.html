@@ -4,10 +4,10 @@
 
         <ul class="navbar-nav d-flex flex-row me-auto mb-2 mb-lg-0 ">
             <li class="nav-item me-3">
-                <a class="nav-link" href="{% url 'estates:listings' %}">Buy</a>
+                <a class="nav-link" href="{% url 'estates:listings' %}?listing_type=sale">Buy</a>
             </li>
             <li class="nav-item me-3">
-                <a class="nav-link" href="{% url 'estates:listings' %}">Rent</a>
+                <a class="nav-link" href="{% url 'estates:listings' %}?listing_type=rent">Rent</a>
             </li>
             <li class="nav-item me-3">
                 <a class="nav-link" href="#">Sell</a>

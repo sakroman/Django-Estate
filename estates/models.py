@@ -34,7 +34,7 @@ class Estate(models.Model):
     address = models.CharField(max_length=300)
     city = models.CharField(max_length=100)
     zipcode = models.CharField(max_length=20)
-    title = models.CharField(max_length=300)
+    title = models.CharField(max_length=300, blank=True, null=True, editable=False)
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
     listing_type = models.CharField(max_length=10, choices=LISTING_TYPES)
@@ -42,8 +42,8 @@ class Estate(models.Model):
     bathrooms = models.IntegerField()
     garage = models.BooleanField()
     garden = models.BooleanField()
-    floor_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
-    land_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    floor_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    land_area_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     photo_main = models.ImageField(upload_to='photos/%Y/%m/%d/')
     photo_1 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
