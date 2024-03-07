@@ -1,7 +1,8 @@
-
 {% extends 'general/main.html' %}
+{% load humanize %}
 
 {% block content %}
+
 <body>
 
     <!-- Hero Section -->
@@ -11,66 +12,101 @@
             <p class="lead">Search through thousands of properties for sale or rent.</p>
             <form class="d-flex justify-content-center">
                 <input class="form-control" type="search" placeholder="Search Properties" aria-label="Search">
-                <button class="btn btn-primary my-2 my-sm-0"  type="submit">Search</button>
+                <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
     </section>
-    
 
-    <section class="">
+
+    <section class="mb-5">
         <h2 class="text-center mb-4">New Listings</h2>
-        <div class="container-fluid">
-        <div class="row">
-
-            <div class="col-md-2">
-                <div class="card mb-4 shadow-sm">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Property Image">
-                    <div class="card-body">
-                        <h5 class="card-title">Property Title</h5>
-                        <p class="card-text">Description of the property goes here.</p>
-                        <a href="" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
+        <div class="d-flex carousel-dark justify-content-end me-5">
+            <button class="round-btn me-3" data-bs-target="#myCarousel" data-bs-slide="prev">
+                <spanaria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+            </button>
+            <button class="round-btn me-3" data-bs-target="#myCarousel" data-bs-slide="next">
+                <span aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+            </button>
         </div>
+        <div class="container-fluid">
+
+            <div id="myCarousel" class="carousel slide  m-3" data-bs-ride="carousel">
+
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row row-cols-1 row-cols-md-5 ">
+
+                            {% for estate in estates %}
+                            <div class="col">
+                                <div class="card mb-4 h-100 shadow-sm">
+                                    <img src="{{ estate.photo_main.url }}" class="card-img card-img-top"
+                                        alt="Property Image">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ estate.title }}</h5>
+                                        <div class="d-flex justify-content-between">
+                                            <p class="card-text">{{ estate.property_type }}</p>
+                                            <h6>£{{ estate.price|floatformat|intcomma }} {% if estate.listing_type == 'rent'%}pcm{%endif%}</h4>
+                                        </div>
+
+
+                                    </div>
+
+                                    <a href="{% url 'estates:property_details' pk=estate.pk %}"
+                                        class="btn btn-warning">View
+                                        Details</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
         </div>
     </section>
 
     <section>
         <div class="container-fluid">
-        <div class="row mb-3 p-3 text-center bg-body-secondary justify-content-md-center">
-            <div class="col-md-3">
-                <div class="card" >
-                    <img src="static/images/buy.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Buy a home</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="{% url 'estates:listings' %}?listing_type=sale" class="btn btn-outline-primary mb-3 mt-3">Browse homes</a>
+            <div class="row mb-3 p-3 text-center bg-body-secondary justify-content-md-center">
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="static/images/buy.jpg" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Buy a home</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                of the card's content.</p>
+                            <a href="{% url 'estates:listings' %}?listing_type=sale"
+                                class="btn btn-outline-primary mb-3 mt-3">Browse homes</a>
+                        </div>
                     </div>
-                  </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card" >
-                    <img src="static/images/sell.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Sell a home</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="" class="btn btn-outline-primary mb-3 mt-3">See your options</a>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="static/images/sell.jpg" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Sell a home</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                of the card's content.</p>
+                            <a href="" class="btn btn-outline-primary mb-3 mt-3">See your options</a>
+                        </div>
                     </div>
-                  </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card" >
-                    <img src="static/images/rent.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Rent a home</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="{% url 'estates:listings' %}?listing_type=rent" class="btn btn-outline-primary mb-3 mt-3">Find rentals</a>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="static/images/rent.jpg" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Rent a home</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                of the card's content.</p>
+                            <a href="{% url 'estates:listings' %}?listing_type=rent"
+                                class="btn btn-outline-primary mb-3 mt-3">Find rentals</a>
+                        </div>
                     </div>
-                  </div>
+                </div>
             </div>
-          </div>
-          </div>
+        </div>
     </section>
 
 </body>

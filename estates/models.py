@@ -58,8 +58,15 @@ class Estate(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
 
     def save(self, *args, **kwargs):
-        self.title = f"{self.address} {self.city} {self.zipcode}"
+        self.title = f"{self.address}, {self.city}, {self.zipcode}"
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wishlist')
+    estates = models.ManyToManyField(Estate)
+
+    def __str__(self):
+        return f"Saved properties for {self.user}"

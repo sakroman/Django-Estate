@@ -46,3 +46,7 @@ class LoginPageView(View):
                 return JsonResponse({'success': False, 'message': 'Invalid email or password.'})
         else:
             return JsonResponse({'success': False, 'message': 'Empty fields.'})
+
+
+class ProfileView(View):
+    ...

@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Q
-from django.http import JsonResponse
-from django.views.generic import DetailView, ListView
-from estates.models import Estate
+from django.http import HttpResponse, JsonResponse
+from django.core.mail import send_mail
+from django.views.generic import DetailView, ListView, View
+from estates.models import Estate, Wishlist
 
 class PropertyListingsView(ListView):
     model = Estate
@@ -77,4 +78,32 @@ class PropertyListingsView(ListView):
 class PropertyDetailsView(DetailView):
     model = Estate
     template_name = 'estates/listing_details.html'
-    context_object_name = 'user'
+    context_object_name = 'listing'
+
+class ContactView(View):
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        message = request.POST.get('message', '')
+        recipient_email = 'sakroitel300@example.com' 
+
+        send_mail(
+            subject=f'New Inquiry from {name}',
+            message=f'From: {name}\nEmail: {email}\n\n{message}',
+            from_email=email,
+            recipient_list=[recipient_email],
+            fail_silently=False,
+        )
+
+        return JsonResponse({'success': True})
+
+class WishlistView(ListView):
+    model = Estate
+    template_name = 'estates/wishlist.html'
+    context_object_name = 'listings'
+
+    def get_queryset(self):
+
+        wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
+        products = wishlist.products.all()
+        return super().get_queryset()
