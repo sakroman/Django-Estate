@@ -39,7 +39,7 @@
                 <div class="offcanvas-body">
                     <div class="mb-3 pb-3 d-flex justify-content-between">
                         <h4>Hello {{request.user.first_name|title }}.</h2>
-                        <a class="btn btn-outline-primary text-danger-emphasis" role="button" href="">
+                        <a class="btn btn-outline-primary text-danger-emphasis" role="button" href="{% url 'users:profile' pk=request.user.pk %}">
                             <i class="fa-solid fa-user-tie fa-xl"></i>
                             View my profile
                         </a>
@@ -52,6 +52,20 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fa-solid fa-heart fa-xl"></i>
                                     <h4 class="ms-2 mb-0">Saved properties</h4>
+
+                                </div>
+                                <p class="text-danger-emphasis mb-0">View all</p>
+                            </div>
+                        </a>
+                    </section>
+
+                    <hr class="border border-warning border-2 opacity-50">
+                    <section>
+                        <a class="text-decoration-none p-2 text-dark" href="{% url 'estates:saved-searches' %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-magnifying-glass fa-xl"></i>
+                                    <h4 class="ms-2 mb-0">Saved searches</h4>
 
                                 </div>
                                 <p class="text-danger-emphasis mb-0">View all</p>

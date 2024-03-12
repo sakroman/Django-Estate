@@ -1,9 +1,11 @@
-from django.shortcuts import render
+import json
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
-from django.views.generic import DetailView, ListView, View
-from estates.models import Estate, Wishlist
+from django.core.serializers import serialize
+from django.views.generic import CreateView, DetailView, ListView, View
+from estates.models import Estate, SavedSearch, Wishlist
+from users.models import User
 
 class PropertyListingsView(ListView):
     model = Estate
@@ -23,6 +25,8 @@ class PropertyListingsView(ListView):
         has_garden = self.request.GET.get('has_garden')
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
+
+        
 
         if search_query:
             queryset = queryset.filter(
@@ -65,15 +69,16 @@ class PropertyListingsView(ListView):
 
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
-        
-        return queryset.distinct()
 
+        return queryset.distinct()
 
     def get_context_data(self, **kwargs):
         context  = super().get_context_data(**kwargs)
         context['property_types'] = Estate.PROPERTY_TYPES
         context['listing_types'] = Estate.LISTING_TYPES
         return context
+
+
 
 class PropertyDetailsView(DetailView):
     model = Estate
@@ -107,3 +112,41 @@ class WishlistView(ListView):
         wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
         products = wishlist.products.all()
         return super().get_queryset()
+
+class SavedSearchesPageView(ListView):
+    model = User
+    template_name = 'estates/saved_searches.html'
+    context_object_name = 'searches'
+
+    def get_queryset(self):
+
+        searches = User.objects.get(user=self.request.user).savedsearch_set.all()
+        return super().get_queryset()
+
+
+class SaveSearchView(View):
+    def post(self, request, *args, **kwargs):
+        body_unicode = request.body.decode('utf-8')
+        
+        search_criteria = json.loads(body_unicode)
+        min_price = search_criteria.get('minPrice')
+        max_price = search_criteria.get('maxPrice')
+
+        # Convert empty strings to None for integer fields
+        min_price = int(min_price) if min_price else None
+        max_price = int(max_price) if max_price else None
+        saved_search = SavedSearch.objects.create(
+            user=request.user,
+            search=search_criteria.get('search'),
+            property_type=search_criteria.get('property_type'),
+            listing_type=search_criteria.get('listing_type'),
+            min_bedrooms=search_criteria.get('minBedrooms'),
+            max_bedrooms=search_criteria.get('maxBedrooms'),
+            min_bathrooms=search_criteria.get('minBathrooms'),
+            max_bathrooms=search_criteria.get('maxBathrooms'),
+            garage=search_criteria.get('garage'),
+            garden=search_criteria.get('garden'),
+            minPrice=min_price,
+            maxPrice=max_price,
+        )
+        return JsonResponse({'message': 'Search saved successfully'})

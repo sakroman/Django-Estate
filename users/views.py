@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
 
-from django.views.generic import CreateView, View
+from django.views.generic import CreateView, DetailView, UpdateView, View
 from django.http import JsonResponse
 from users.forms import SignUpForm
 from .models import *
@@ -48,5 +48,22 @@ class LoginPageView(View):
             return JsonResponse({'success': False, 'message': 'Empty fields.'})
 
 
-class ProfileView(View):
-    ...
+class ProfileView(DetailView):
+    model = User
+    template_name = 'users/profile.html'
+    context_object_name = 'user'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['searches'] = self.request.user.savedsearch_set.all().order_by('-created_at')
+        return context
+
+
+class ProfileSettingsView(UpdateView):
+    model = User
+    template_name = 'users/profile_settings.html'
+    success_url = reverse_lazy('home')
+
+    def get_object(self, queryset=None):
+        return self.request.user

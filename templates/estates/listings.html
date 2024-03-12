@@ -6,166 +6,176 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Filter</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title">Filter</h5>
+                        <button id="save-search-btn" class="btn btn-primary">Save Search</button>
+                    </div>
+
                     <div class="form-group">
 
-                        <input id="searchInput" type="search" class="form-control" placeholder="Search..."
-                            aria-label="Search">
-                        <div class="mt-4">
-                            <label for="propertyType">Property Type</label>
-                            <select class="form-select" id="propertyType">
-                                <option selected>All</option>
-                                {% for type in property_types %}
-                                <option value="{{type.0}}">{{type.1}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mt-3">
-                            <label for="listingType">Listing Type</label>
-                            <select class="form-select" id="listingType">
-                                <option selected>All</option>
-                                {% for type in listing_types %}
-                                <option value="{{type.0}}">{{type.1}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        <form action="" id="filterForm">
+                            <input id="searchInput" name="search_query" type="search" class="form-control"
+                                placeholder="Search..." aria-label="Search">
+                            <div class="mt-4">
+                                <label for="propertyType">Property Type</label>
+                                <select class="form-select filter-input" name="property_type" id="propertyType">
+                                    <option selected>All</option>
+                                    {% for type in property_types %}
+                                    <option value="{{type.0}}">{{type.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mt-3">
+                                <label for="listingType">Listing Type</label>
+                                <select class="form-select filter-input" name="listing_type" id="listingType">
+                                    <option selected>All</option>
+                                    {% for type in listing_types %}
+                                    <option value="{{type.0}}">{{type.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
-                        <div class="mt-3 row">
-                            <div class="col">
-                                <select class="form-select" id="minBedrooms">
-                                    <option selected value="0">Min bedrooms</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5+</option>
-                                </select>
+                            <div class="mt-3 row">
+                                <div class="col">
+                                    <select class="form-select filter-input" name="min_bedrooms" id="minBedrooms">
+                                        <option selected value="0">Min bedrooms</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5+</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select filter-input" name="max_bedrooms" id="maxBedrooms">
+                                        <option selected value="6">Max bedrooms</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col">
-                                <select class="form-select" id="maxBedrooms">
-                                    <option selected value="6">Max bedrooms</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3 row">
-                            <div class="col">
-                                <select class="form-select" id="minBathrooms">
-                                    <option selected value="0">Min bathrooms</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4+</option>
-                                </select>
-                            </div>
-                            <div class=" col">
 
-                                <select class="form-select" id="maxBathrooms">
-                                    <option selected value="6">Max bathrooms</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-3 mb-3">
-                            <div class="d-grid ">
-                                <button class="btn btn-warning" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseExample" aria-expanded="false"
-                                    aria-controls="collapseExample">
-                                    Must haves
-                                </button>
-                            </div>
-                            <div class="collapse" id="collapseExample">
-                                <div class="card card-body">
+                            <div class="mt-3 row">
+                                <div class="col">
+                                    <select class="form-select filter-input" name="min_bathrooms" id="minBathrooms">
+                                        <option selected value="0">Min bathrooms</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4+</option>
+                                    </select>
+                                </div>
+                                <div class=" col">
 
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="garage">
-                                        <label class="form-check-label" for="garage">Garage</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="garden">
-                                        <label class="form-check-label" for="garden">Garden</label>
+                                    <select class="form-select filter-input" name="max_bathrooms" id="maxBathrooms">
+                                        <option selected value="6">Max bathrooms</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3 mb-3">
+                                <div class="d-grid ">
+                                    <button class="btn btn-warning" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseExample" aria-expanded="false"
+                                        aria-controls="collapseExample">
+                                        Must haves
+                                    </button>
+                                </div>
+                                <div class="collapse" id="collapseExample">
+                                    <div class="card card-body">
+
+                                        <div class="form-check">
+                                            <input class="form-check-input filter-input" name="has_garage"
+                                                type="checkbox" value="" id="garage">
+                                            <label class="form-check-label" for="garage">Garage</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input filter-input" name="has_garden"
+                                                type="checkbox" value="" id="garden">
+                                            <label class="form-check-label" for="garden">Garden</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <label for="minPrice">Minimum Price (£)</label>
-                            <input type="number" class="form-control" id="minPrice">
-                            <label for="maxPrice">Maximum Price (£)</label>
-                            <input type="number" class="form-control" id="maxPrice">
-                        </div>
+                            <div>
+                                <label for="minPrice">Minimum Price (£)</label>
+                                <input type="number" class="form-control filter-input" name="min_price" id="minPrice">
+                                <label for="maxPrice">Maximum Price (£)</label>
+                                <input type="number" class="form-control filter-input" name="max_price" id="maxPrice">
+                            </div>
+                            <button id="filter-button" type="submit" class="mt-3 btn btn-warning">Filter</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Listings -->
+
         <div id="listingsContainer" class="col-md-9">
             {% if listings %}
             {% for listing in listings %}
-            <a href="{% url 'estates:property_details' listing.pk %}" class="estate-card-link">
-            <div id="{{listing.id}}" class="row border rounded mb-4 overflow-hidden">
-                <div class="col-md-7 p-0 overflow-hidden">
-                    <div id="carousel{{ listing.id }}" class="carousellisting carousel slide">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="{{ listing.photo_main.url }}" class="d-block  w-100" alt="Property Image">
+            <a href="" class="estate-card-link">
+                <div id="{{listing.id}}" class="row border rounded mb-4 overflow-hidden">
+                    <div class="col-md-7 p-0 overflow-hidden">
+                        <div id="carousel{{ listing.id }}" class="carousellisting carousel slide">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ listing.photo_main.url }}" class="d-block  w-100" alt="Property Image">
+                                </div>
+                                {% if listing.photo_1 %}
+                                <div class="carousel-item">
+                                    <img src="{{ listing.photo_1.url }}" class="d-block w-100" alt="Property Image">
+                                </div>
+                                {% endif %}
+                                {% if listing.photo_2 %}
+                                <div class="carousel-item">
+                                    <img src="{{ listing.photo_2.url }}" class="d-block w-100" alt="Property Image">
+                                </div>
+                                {% endif %}
+                                {% if listing.photo_3 %}
+                                <div class="carousel-item">
+                                    <img src="{{ listing.photo_3.url }}" class="d-block w-100" alt="Property Image">
+                                </div>
+                                {% endif %}
                             </div>
-                            {% if listing.photo_1 %}
-                            <div class="carousel-item">
-                                <img src="{{ listing.photo_1.url }}" class="d-block w-100" alt="Property Image">
-                            </div>
-                            {% endif %}
-                            {% if listing.photo_2 %}
-                            <div class="carousel-item">
-                                <img src="{{ listing.photo_2.url }}" class="d-block w-100" alt="Property Image">
-                            </div>
-                            {% endif %}
-                            {% if listing.photo_3 %}
-                            <div class="carousel-item">
-                                <img src="{{ listing.photo_3.url }}" class="d-block w-100" alt="Property Image">
-                            </div>
-                            {% endif %}
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#carousel{{ listing.id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#carousel{{ listing.id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ listing.id }}"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ listing.id }}"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                    </div>
+
+                    <div class="col-md-5 d-flex flex-column">
+                        <div class=" mb-4">
+                            <div class="">
+                                <h5 class="pt-3">{{ listing.address }}, {{listing.city}}, {{listing.zipcode}}</h5>
+                                <div>
+                                    <span>{{listing.property_type}}</span>
+                                    <span class="m-2"><i class="fa-solid fa-bed"></i> {{ listing.bedrooms }}</span>
+                                    <span class="m-2"><i class="fa-solid fa-toilet"></i> {{ listing.bathrooms }}</span>
+                                </div>
+                                <p class="">{{ listing.description|truncatechars:200 }}</p>
+                            </div>
+
+                        </div>
+                        <div class="price d-flex justify-content-start mt-auto">
+                            <h4>£{{ listing.price|floatformat|intcomma }} {% if listing.listing_type == 'rent'%}pcm{%endif%}</h4>
+
+                        </div>
                     </div>
                 </div>
-
-                <div class="col-md-5 d-flex flex-column">
-                    <div class=" mb-4">
-                        <div class="">
-                            <h5 class="pt-3">{{ listing.address }}, {{listing.city}}, {{listing.zipcode}}</h5>
-                            <div>
-                                <span>{{listing.property_type}}</span>
-                                <span class="m-2"><i class="fa-solid fa-bed"></i> {{ listing.bedrooms }}</span>
-                                <span class="m-2"><i class="fa-solid fa-toilet"></i> {{ listing.bathrooms }}</span>
-                            </div>
-                            <p class="">{{ listing.description|truncatechars:200 }}</p>
-                        </div>
-
-                    </div>
-                    <div class="price d-flex justify-content-start mt-auto">
-                        <h4>£{{ listing.price|floatformat|intcomma }} {% if listing.listing_type == 'rent'%}pcm{%endif%}</h4>
-                    </div>
-                </div>
-            </div>
             </a>
             {% endfor %}
             {% else %}
@@ -175,6 +185,101 @@
 
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('filterForm');
 
+        function updateListings() {
+            const formData = new FormData(form);
+            const urlParams = new URLSearchParams(formData).toString();
+            const url = '{% url "estates:listings" %}?' + urlParams;
+            window.location.href = url;
+
+            localStorage.setItem('formData', JSON.stringify(Object.fromEntries(formData)));
+            localStorage.setItem('filterButtonClicked', 'true');
+        }
+
+        const filterButtonClicked = localStorage.getItem('filterButtonClicked') === 'true';
+        if (filterButtonClicked) {
+            loadFormDataFromStorage()
+        }
+
+
+        function loadFormDataFromStorage() {
+            const savedFormData = localStorage.getItem('formData');
+            localStorage.setItem('filterButtonClicked', 'false');
+
+            if (savedFormData) {
+                const formData = new FormData();
+                const parsedData = JSON.parse(savedFormData);
+                Object.entries(parsedData).forEach(([key, value]) => {
+                    formData.append(key, value);
+                });
+                for (const [key, value] of formData.entries()) {
+
+                    const inputElement = form.querySelector(`[name="${key}"]`);
+                    if (inputElement) {
+                        if (inputElement.type === 'checkbox') {
+                            inputElement.checked = 'true';
+                        } else {
+                            inputElement.value = value;
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const listingTypeParam = urlParams.get('listing_type');
+        if (listingTypeParam) {
+            const listingTypeSelect = document.getElementById('listingType');
+            if (listingTypeSelect) {
+                listingTypeSelect.value = listingTypeParam;
+            }
+        }
+
+
+        form.addEventListener('submit', updateListings);
+
+    });
+
+
+    document.getElementById('save-search-btn').addEventListener('click', function () {
+        var searchCriteria = {
+            'search': document.getElementById('searchInput').value,
+            'property_type': document.getElementById('propertyType').value,
+            'listing_type': document.getElementById('listingType').value,
+            'minBedrooms': document.getElementById('minBedrooms').value,
+            'maxBedrooms': document.getElementById('maxBedrooms').value,
+            'minBathrooms': document.getElementById('minBathrooms').value,
+            'maxBathrooms': document.getElementById('maxBathrooms').value,
+            'garage': document.getElementById('garage').checked,
+            'garden': document.getElementById('garden').checked,
+            'minPrice': document.getElementById('minPrice').value,
+            'maxPrice': document.getElementById('maxPrice').value,
+        };
+
+        fetch('{% url "estates:save-search" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(searchCriteria)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Search saved successfully!');
+                } else {
+                    console.error('Failed to save search');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
 
 {% endblock content %}
