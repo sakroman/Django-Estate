@@ -1,9 +1,11 @@
 import json
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, request
 from django.core.mail import send_mail
-from django.core.serializers import serialize
-from django.views.generic import CreateView, DetailView, ListView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, View
 from estates.models import Estate, SavedSearch, Wishlist
 from users.models import User
 
@@ -14,7 +16,7 @@ class PropertyListingsView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_query = self.request.GET.get('search')
+        search_query = self.request.GET.get('search_query')
         property_type = self.request.GET.get('property_type')
         listing_type = self.request.GET.get('listing_type')
         min_bedrooms = self.request.GET.get('min_bedrooms')
@@ -74,6 +76,22 @@ class PropertyListingsView(ListView):
 
     def get_context_data(self, **kwargs):
         context  = super().get_context_data(**kwargs)
+        current_search_criteria = {
+        'search': self.request.GET.get('search_query', ''),
+        'property_type':  self.request.GET.get('property_type', ''),
+        'listing_type':  self.request.GET.get('listing_type', ''),
+        'min_bedrooms':  self.request.GET.get('min_bedrooms'),
+        'max_bedrooms':  self.request.GET.get('max_bedrooms'),
+        'min_bathrooms':  self.request.GET.get('min_bathrooms'),
+        'max_bathrooms':  self.request.GET.get('max_bathrooms'),
+        'garage':  self.request.GET.get('has_garage', False),
+        'garden':  self.request.GET.get('has_garden', False),
+
+        }
+        print(current_search_criteria)
+        is_search_saved = SavedSearch.objects.filter(user=self.request.user, **current_search_criteria).exists()
+        print(is_search_saved)
+        context['is_search_saved'] = is_search_saved
         context['property_types'] = Estate.PROPERTY_TYPES
         context['listing_types'] = Estate.LISTING_TYPES
         return context
@@ -85,7 +103,15 @@ class PropertyDetailsView(DetailView):
     template_name = 'estates/listing_details.html'
     context_object_name = 'listing'
 
-class ContactView(View):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
+        wishlisted = self.object in wishlist.estates.all()
+        print(wishlisted)
+        context['is_wishlisted'] = wishlisted
+        return context
+
+class ContactView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         name = request.POST.get('name', '')
         email = request.POST.get('email', '')
@@ -102,7 +128,7 @@ class ContactView(View):
 
         return JsonResponse({'success': True})
 
-class WishlistView(ListView):
+class WishlistView(LoginRequiredMixin, ListView):
     model = Estate
     template_name = 'estates/wishlist.html'
     context_object_name = 'listings'
@@ -110,32 +136,49 @@ class WishlistView(ListView):
     def get_queryset(self):
 
         wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
-        products = wishlist.products.all()
+        products = wishlist.estates.all()
         return super().get_queryset()
 
-class SavedSearchesPageView(ListView):
-    model = User
-    template_name = 'estates/saved_searches.html'
+
+class AddRemoveWishlistView(View):
+    def post(self, request, *args, **kwargs):
+        estate_id = json.loads(request.body)
+
+        estate = get_object_or_404(Estate, id=estate_id)
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        if estate not in wishlist.estates.all():
+            wishlist.estates.add(estate)
+            added = True
+        else:
+            wishlist.estates.remove(estate)
+            added = False
+
+        return JsonResponse({'added': added})
+
+
+class SavedSearchesPageView(LoginRequiredMixin, ListView):
+    model = SavedSearch
+    template_name = 'estates/saved-searches.html'
     context_object_name = 'searches'
 
     def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = self.request.user.savedsearch_set.all()
+        
+        return queryset
 
-        searches = User.objects.get(user=self.request.user).savedsearch_set.all()
-        return super().get_queryset()
 
-
-class SaveSearchView(View):
+class SaveSearchView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         body_unicode = request.body.decode('utf-8')
-        
         search_criteria = json.loads(body_unicode)
         min_price = search_criteria.get('minPrice')
         max_price = search_criteria.get('maxPrice')
 
-        # Convert empty strings to None for integer fields
         min_price = int(min_price) if min_price else None
         max_price = int(max_price) if max_price else None
-        saved_search = SavedSearch.objects.create(
+
+        existing_search = SavedSearch.objects.filter(
             user=request.user,
             search=search_criteria.get('search'),
             property_type=search_criteria.get('property_type'),
@@ -148,5 +191,34 @@ class SaveSearchView(View):
             garden=search_criteria.get('garden'),
             minPrice=min_price,
             maxPrice=max_price,
-        )
-        return JsonResponse({'message': 'Search saved successfully'})
+        ).first()
+
+        if existing_search:
+            existing_search.delete()
+            return JsonResponse({'message': 'Search removed successfully'})
+        else:
+            SavedSearch.objects.create(
+                user=request.user,
+                search=search_criteria.get('search'),
+                property_type=search_criteria.get('property_type'),
+                listing_type=search_criteria.get('listing_type'),
+                min_bedrooms=search_criteria.get('minBedrooms'),
+                max_bedrooms=search_criteria.get('maxBedrooms'),
+                min_bathrooms=search_criteria.get('minBathrooms'),
+                max_bathrooms=search_criteria.get('maxBathrooms'),
+                garage=search_criteria.get('garage'),
+                garden=search_criteria.get('garden'),
+                minPrice=min_price,
+                maxPrice=max_price,
+            )
+            return JsonResponse({'message': 'Search saved successfully'})
+
+
+class DeleteSearchView(LoginRequiredMixin, DeleteView):
+    model = SavedSearch
+    success_url = reverse_lazy('estates:saved-searches')
+    
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({'message': 'Search deleted successfully'})

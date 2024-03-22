@@ -90,21 +90,63 @@ class SavedSearch(models.Model):
 
     def generate_description(self):
 
-        description = f"<span class='badge text-bg-info'>{self.property_type}</span>, <span class='badge text-bg-info'>{self.listing_type}</span>"
+        description = f"<span class='badge text-bg-info'>{self.property_type}</span>  <span class='badge text-bg-info'>{self.listing_type} </span>"
         if self.min_bedrooms is not None and self.min_bedrooms != 0:
-            description += f", <span class='badge text-bg-info'>Min Bedrooms: {self.min_bedrooms}</span>"
+            description += f" <span class='badge text-bg-info'>Min Bedrooms: {self.min_bedrooms} </span>"
         if self.max_bedrooms is not None and self.max_bedrooms != 6:
-            description += f", <span class='badge text-bg-info'>Max Bedrooms: {self.max_bedrooms}</span>"
+            description += f" <span class='badge text-bg-info'>Max Bedrooms: {self.max_bedrooms} </span>"
         if self.min_bathrooms is not None and self.min_bathrooms != 0:
-            description += f", <span class='badge text-bg-info'>Min Bathrooms: {self.min_bathrooms}</span>"
+            description += f" <span class='badge text-bg-info'>Min Bathrooms: {self.min_bathrooms} </span>"
         if self.max_bathrooms is not None and self.max_bathrooms != 6:
-            description += f", <span class='badge text-bg-info'>Max Bathrooms: {self.max_bathrooms}</span>"
+            description += f" <span class='badge text-bg-info'>Max Bathrooms: {self.max_bathrooms} </span>"
         if self.garage:
-            description += f", <span class='badge text-bg-info'>Garage: {self.garage}</span>"
+            description += f" <span class='badge text-bg-info'>Garage: {self.garage} </span>"
         if self.garden:
-            description += f", <span class='badge text-bg-info'>Garden: {self.garden}</span>"
+            description += f" <span class='badge text-bg-info'>Garden: {self.garden} </span>"
         if self.minPrice:
-            description += f", <span class='badge text-bg-info'>Min Price: {self.minPrice}</span>"
+            description += f" <span class='badge text-bg-info'>Min Price: {self.minPrice} </span>"
         if self.maxPrice:
-            description += f", <span class='badge text-bg-info'>Max Price: {self.maxPrice}</span>"
+            description += f" <span class='badge text-bg-info'>Max Price: {self.maxPrice}</span>"
         return mark_safe(description)
+    
+    def generate_query(self):
+        query = {}
+
+        if self.search:
+            query['search_query'] = self.search
+
+        if self.property_type:
+            query['property_type'] = self.property_type
+
+        if self.listing_type:
+            query['listing_type'] = self.listing_type
+
+        if self.min_bedrooms:
+            query['min_bedrooms'] = self.min_bedrooms
+        else:
+            query['min_bedrooms'] = 0
+
+        if self.max_bedrooms:
+            query['max_bedrooms'] = self.max_bedrooms
+
+        if self.min_bathrooms:
+            query['min_bathrooms'] = self.min_bathrooms
+        else:
+            query['min_bathrooms'] = 0
+
+        if self.max_bathrooms:
+            query['max_bathrooms'] = self.max_bathrooms
+
+        if self.garage:
+            query['has_garage'] = self.garage
+
+        if self.garden:
+            query['has_garden'] = self.garden
+
+        if self.minPrice:
+            query['min_price'] = self.minPrice
+
+        if self.maxPrice:
+            query['max_price'] = self.maxPrice
+
+        return query

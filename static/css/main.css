@@ -45,3 +45,13 @@
 }
 
 .round-btn:hover {opacity: 0.6}
+
+.searchbox {
+    cursor: pointer;
+}
+
+.round-btn:hover {opacity: 0.6}
+
+.delete {
+    z-index: 9999;
+}

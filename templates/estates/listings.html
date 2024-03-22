@@ -8,7 +8,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title">Filter</h5>
-                        <button id="save-search-btn" class="btn btn-primary">Save Search</button>
+                        <a id="save-search-btn" class="btn"><i class="{% if is_search_saved %} fa-solid {% else %} fa-regular {%endif%} fa-star"></i> Save Search</a>
                     </div>
 
                     <div class="form-group">
@@ -92,12 +92,12 @@
 
                                         <div class="form-check">
                                             <input class="form-check-input filter-input" name="has_garage"
-                                                type="checkbox" value="" id="garage">
+                                                type="checkbox" value="True" id="garage">
                                             <label class="form-check-label" for="garage">Garage</label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input filter-input" name="has_garden"
-                                                type="checkbox" value="" id="garden">
+                                                type="checkbox" value="True" id="garden">
                                             <label class="form-check-label" for="garden">Garden</label>
                                         </div>
                                     </div>
@@ -120,7 +120,7 @@
         <div id="listingsContainer" class="col-md-9">
             {% if listings %}
             {% for listing in listings %}
-            <a href="" class="estate-card-link">
+            <a href="{% url 'estates:property_details' pk=listing.pk %}" class="estate-card-link">
                 <div id="{{listing.id}}" class="row border rounded mb-4 overflow-hidden">
                     <div class="col-md-7 p-0 overflow-hidden">
                         <div id="carousel{{ listing.id }}" class="carousellisting carousel slide">
@@ -168,7 +168,6 @@
                                 </div>
                                 <p class="">{{ listing.description|truncatechars:200 }}</p>
                             </div>
-
                         </div>
                         <div class="price d-flex justify-content-start mt-auto">
                             <h4>£{{ listing.price|floatformat|intcomma }} {% if listing.listing_type == 'rent'%}pcm{%endif%}</h4>
@@ -187,10 +186,13 @@
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+
         const form = document.getElementById('filterForm');
 
         function updateListings() {
             const formData = new FormData(form);
+            
             const urlParams = new URLSearchParams(formData).toString();
             const url = '{% url "estates:listings" %}?' + urlParams;
             window.location.href = url;
@@ -232,11 +234,31 @@
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        const listingTypeParam = urlParams.get('listing_type');
-        if (listingTypeParam) {
-            const listingTypeSelect = document.getElementById('listingType');
-            if (listingTypeSelect) {
-                listingTypeSelect.value = listingTypeParam;
+
+        const formFieldMap = {
+            'search_query': 'searchInput',
+            'property_type': 'propertyType',
+            'listing_type': 'listingType',
+            'min_bedrooms': 'minBedrooms',
+            'max_bedrooms': 'maxBedrooms',
+            'min_bathrooms': 'minBathrooms',
+            'max_bathrooms': 'maxBathrooms',
+            'has_garage': 'garage',
+            'has_garden': 'garden',
+            'min_price': 'minPrice',
+            'max_price': 'maxPrice'
+        };
+        for (const [param, fieldId] of Object.entries(formFieldMap)) {
+            const value = urlParams.get(param);
+            if(value != null){
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.type === 'checkbox') {
+                        field.checked = (value.toLowerCase() === 'true');
+                    } else {
+                        field.value = value
+                    }
+                }
             }
         }
 
@@ -247,6 +269,9 @@
 
 
     document.getElementById('save-search-btn').addEventListener('click', function () {
+        var starIcon = this.querySelector('i');
+        starIcon.classList.toggle('fa-regular');
+        starIcon.classList.toggle('fa-solid');
         var searchCriteria = {
             'search': document.getElementById('searchInput').value,
             'property_type': document.getElementById('propertyType').value,
@@ -280,6 +305,7 @@
                 console.error('Error:', error);
             });
     });
+    
 </script>
 
 {% endblock content %}

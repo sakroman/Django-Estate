@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import CreateView, DetailView, UpdateView, View
 from django.http import JsonResponse
@@ -48,7 +49,7 @@ class LoginPageView(View):
             return JsonResponse({'success': False, 'message': 'Empty fields.'})
 
 
-class ProfileView(DetailView):
+class ProfileView(LoginRequiredMixin, DetailView):
     model = User
     template_name = 'users/profile.html'
     context_object_name = 'user'
@@ -60,10 +61,11 @@ class ProfileView(DetailView):
         return context
 
 
-class ProfileSettingsView(UpdateView):
+class ProfileSettingsView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users/profile_settings.html'
     success_url = reverse_lazy('home')
+    fields = ['first_name', 'last_name', 'email', 'phone']
 
     def get_object(self, queryset=None):
         return self.request.user

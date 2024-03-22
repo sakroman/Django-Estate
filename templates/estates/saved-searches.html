@@ -1,5 +1,86 @@
 {% extends 'general/main.html' %}
 
 {% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'users:profile' pk=request.user.pk %}" class="text-decoration-none text-dark"><i
+                        class="fa-solid fa-arrow-left"></i> Back to profile</a>
+                <div class="d-flex flex-column align-items-center text-dark text-decoration-none">
+                    <a href="{% url 'users:settings' %}" class="text-dark text-decoration-none"><i
+                            class="pb-2 fa-solid fa-gear "></i>Account settings</a>
+                    <a href="{% url 'users:logout' %}" class="text-dark text-decoration-none"><i
+                            class="fa-solid fa-door-open"></i>Log out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Saved Searches</h4>
 
+                </div>
+                <div class="card-body">
+                    {% for search in searches %}
+                    <div class="searchbox rounded bg-light shadow-lg mb-4" onclick="window.location.href='{% url 'estates:listings'%}?{% for key, value in search.generate_query.items %}{{key}}={{value}}{% if not forloop.last %}&{%endif%}{%endfor%}'">
+                        <div class="p-4">
+                            <div class="pb-3">
+                                <div class="d-flex justify-content-between">
+                                    {% if search.search %}
+                                    <h4><b>{{ search.search }}</b></h4>
+                                    {% else %}
+                                    <b>Location not specified</b>
+                                    {% endif %}
+                                    <a data-id="{{search.id}}" class="btn delete"><i class="fa-solid fa-star"></i>
+                                        Saved</a>
+                                </div>
+                                <hr class="border border-warning border-2 opacity-50">
+                            </div>
+                            <p>{{ search.generate_description }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No saved searches found.</p>
+                    {% endfor %}
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const deleteButtons = document.querySelectorAll('.delete');
+
+    deleteButtons.forEach(button => {
+        
+        button.addEventListener('click', function (e) {
+            e.stopPropagation();
+            
+            const searchId = this.getAttribute('data-id');
+            deleteSearch(this, searchId);
+        })
+    });
+
+    function deleteSearch(button, searchId) {
+        fetch('{% url "estates:delete-search" pk=0 %}'.replace('0', searchId), {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+            .then(response => {
+                if (response.ok) {
+                    button.closest('.rounded').remove();
+                } else {
+                    console.error('Failed to delete search')
+                }
+            })
+            .catch(error => {
+                console.log('Error', error)
+            })
+    }
+</script>
 {% endblock content %}

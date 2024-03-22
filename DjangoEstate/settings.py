@@ -129,6 +129,7 @@ STATICFILES_DIRS = [
     "static/",
 ]
 
+LOGIN_URL = 'users:register'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
