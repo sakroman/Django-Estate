@@ -3,10 +3,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from django.views.generic import CreateView, DetailView, UpdateView, View
 from django.http import JsonResponse
-from users.forms import SignUpForm
+from users.forms import ProfileSettingsForm, SignUpForm
 from .models import *
 
 
@@ -63,9 +62,11 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
 class ProfileSettingsView(LoginRequiredMixin, UpdateView):
     model = User
+    form_class = ProfileSettingsForm
     template_name = 'users/profile_settings.html'
-    success_url = reverse_lazy('home')
-    fields = ['first_name', 'last_name', 'email', 'phone']
+    success_url = reverse_lazy('users:settings')
+
 
     def get_object(self, queryset=None):
         return self.request.user
+        

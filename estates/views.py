@@ -76,22 +76,21 @@ class PropertyListingsView(ListView):
 
     def get_context_data(self, **kwargs):
         context  = super().get_context_data(**kwargs)
-        current_search_criteria = {
-        'search': self.request.GET.get('search_query', ''),
-        'property_type':  self.request.GET.get('property_type', ''),
-        'listing_type':  self.request.GET.get('listing_type', ''),
-        'min_bedrooms':  self.request.GET.get('min_bedrooms'),
-        'max_bedrooms':  self.request.GET.get('max_bedrooms'),
-        'min_bathrooms':  self.request.GET.get('min_bathrooms'),
-        'max_bathrooms':  self.request.GET.get('max_bathrooms'),
-        'garage':  self.request.GET.get('has_garage', False),
-        'garden':  self.request.GET.get('has_garden', False),
+        if self.request.user.is_authenticated:
+            current_search_criteria = {
+            'search': self.request.GET.get('search_query', ''),
+            'property_type':  self.request.GET.get('property_type', ''),
+            'listing_type':  self.request.GET.get('listing_type', ''),
+            'min_bedrooms':  self.request.GET.get('min_bedrooms'),
+            'max_bedrooms':  self.request.GET.get('max_bedrooms'),
+            'min_bathrooms':  self.request.GET.get('min_bathrooms'),
+            'max_bathrooms':  self.request.GET.get('max_bathrooms'),
+            'garage':  self.request.GET.get('has_garage', False),
+            'garden':  self.request.GET.get('has_garden', False),
 
-        }
-        print(current_search_criteria)
-        is_search_saved = SavedSearch.objects.filter(user=self.request.user, **current_search_criteria).exists()
-        print(is_search_saved)
-        context['is_search_saved'] = is_search_saved
+            }
+            is_search_saved = SavedSearch.objects.filter(user=self.request.user, **current_search_criteria).exists()
+            context['is_search_saved'] = is_search_saved
         context['property_types'] = Estate.PROPERTY_TYPES
         context['listing_types'] = Estate.LISTING_TYPES
         return context
@@ -105,10 +104,10 @@ class PropertyDetailsView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
-        wishlisted = self.object in wishlist.estates.all()
-        print(wishlisted)
-        context['is_wishlisted'] = wishlisted
+        if self.request.user.is_authenticated:
+            wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
+            wishlisted = self.object in wishlist.estates.all()
+            context['is_wishlisted'] = wishlisted
         return context
 
 class ContactView(LoginRequiredMixin, View):
@@ -140,7 +139,7 @@ class WishlistView(LoginRequiredMixin, ListView):
         return super().get_queryset()
 
 
-class AddRemoveWishlistView(View):
+class AddRemoveWishlistView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         estate_id = json.loads(request.body)
 

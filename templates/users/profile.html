@@ -24,18 +24,21 @@
                     <h4 class="mb-4">Latest Saved Searches</h4>
                     <ul class="list-group">
                         {% for search in searches %}
-                        {% if forloop.counter <= 3 %}
-                            <li class="list-group-item pt-2">
-                                {% if search.search %}
-                                    <b>{{ search.search }}</b>
-                                {% else %}
-                                    <b>Location not specified</b>
-                                {% endif %}
-                                <p>{{ search.generate_description|truncatechars:260 }}</p>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
+                            {% if forloop.counter <= 3 %}
+                                <li class="list-group-item pt-2">
+                                    <a class="text-decoration-none text-dark" href="{% url 'estates:listings' %}?{% for key, value in search.generate_query.items %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endfor %}">
+                                        {% if search.search %}
+                                            <b>{{ search.search }}</b>
+                                        {% else %}
+                                            <b>Location not specified</b>
+                                        {% endif %}
+                                        <p>{{ search.generate_description|truncatechars:260 }}</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
                     </ul>
+                    
                     <a href="{% url 'estates:saved-searches' %}" class="text-decoration-none text-dark d-flex justify-content-center pt-3">View all saved searches</a>
                 </div>
             </div>
