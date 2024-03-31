@@ -2,16 +2,34 @@
 {% load humanize %}
 
 {% block content %}
+<style>
+@media (min-width: 768px) {
+  .carousel-inner {
+    display: flex;
+    padding: 1em;
+  }
+  .carousel-item {
+    margin-right: 0;
+    flex: 0 0 20%;
+    display: block;
+  }
+
+.card{
+    margin: 0 .5em;
+    box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
+    border: none;
+}
+}
+</style>
 
 <body>
 
-    <!-- Hero Section -->
     <section class="jumbotron jumbotron-fluid bg-image hero-image  text-center mb-4">
         <div class="container">
             <h1 class="display-4 text-body-emphasis">Find your dream home</h1>
             <p class="lead">Search through thousands of properties for sale or rent.</p>
-            <form class="d-flex justify-content-center">
-                <input class="form-control" type="search" placeholder="Search Properties" aria-label="Search">
+            <form class="d-flex justify-content-center" action="{% url 'estates:listings' %}" method="get">
+                <input class="form-control" name="search_query" type="text" placeholder="Search Properties" aria-label="Search">
                 <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
@@ -21,51 +39,50 @@
     <section class="mb-5">
         <h2 class="text-center mb-4">New Listings</h2>
         <div class="d-flex carousel-dark justify-content-end me-5">
-            <button class="round-btn me-3" data-bs-target="#myCarousel" data-bs-slide="prev">
-                <spanaria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+            <button class="round-btn me-3" onclick="moveCarousel('prev')">
+                <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
             </button>
-            <button class="round-btn me-3" data-bs-target="#myCarousel" data-bs-slide="next">
+            <button class="round-btn me-3" onclick="moveCarousel('next')">
                 <span aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
             </button>
         </div>
         <div class="container-fluid">
-
-            <div id="myCarousel" class="carousel slide  m-3" data-bs-ride="carousel">
-
+            <div id="carouselExampleControls" class="carousel slide m-3">
                 <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <div class="row row-cols-1 row-cols-md-5 ">
-
-                            {% for estate in estates %}
-                            <div class="col">
-                                <div class="card mb-4 h-100 shadow-sm">
-                                    <img src="{{ estate.photo_main.url }}" class="card-img card-img-top"
-                                        alt="Property Image">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ estate.title }}</h5>
-                                        <div class="d-flex justify-content-between">
-                                            <p class="card-text">{{ estate.property_type }}</p>
-                                            <h6>£{{ estate.price|floatformat|intcomma }} {% if estate.listing_type == 'rent'%}pcm{%endif%}</h4>
-                                        </div>
-
-
+                    {% for estate in estates|slice:":15" %}
+                        {% if forloop.first %}
+                            <div class="carousel-item active">
+                        {% else %}
+                            {% if forloop.counter0|divisibleby:1 %}
+                                </div>
+                                <div class="carousel-item">
+                            {% endif %}
+                        {% endif %}
+                        <div class="card mb-4 h-100 shadow-md">
+                            <img src="{{ estate.photo_main.url }}" class="card-img card-img-top" alt="Property Image">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="card-text mb-0">{{ estate.property_type }}</p>
+                                        <h6 class="mb-0">£{{ estate.price|floatformat|intcomma }} {% if estate.listing_type == 'rent'%}pcm{%endif%}</h6>
                                     </div>
-
-                                    <a href="{% url 'estates:property_details' pk=estate.pk %}"
-                                        class="btn btn-warning">View
-                                        Details</a>
+                                    <a href="{% url 'estates:property_details' pk=estate.pk %}" class="btn btn-warning">View Details</a>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="text-muted fs-6">{{ estate.title|truncatechars:65 }}</span>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                    </div>
-
-
+                        
+                        {% if forloop.last %}
+                                </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
-
             </div>
         </div>
     </section>
+    
 
     <section>
         <div class="container-fluid">
@@ -82,17 +99,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <img src="static/images/sell.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Sell a home</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the card's content.</p>
-                            <a href="" class="btn btn-outline-primary mb-3 mt-3">See your options</a>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="col-md-3">
                     <div class="card">
                         <img src="static/images/rent.jpg" class="card-img-top" alt="...">
@@ -110,5 +117,28 @@
     </section>
 
 </body>
+<script>
+    function moveCarousel(direction) {
+        const carousel = new bootstrap.Carousel(document.getElementById('carouselExampleControls'), { interval: false });
+        const carouselInner = document.querySelector('#carouselExampleControls .carousel-inner');
+        const cardWidth = document.querySelector('.carousel-item').clientWidth;
+
+        let scrollPosition = carouselInner.scrollLeft;
+
+        if (direction === 'prev' && scrollPosition > 0) {
+            scrollPosition -= cardWidth;
+            carouselInner.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+        } else if (direction === 'next' && scrollPosition < carouselInner.scrollWidth - carouselInner.clientWidth) {
+            scrollPosition += cardWidth;
+            carouselInner.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+            });
+        }
+    }
+</script>
 
 {% endblock content %}

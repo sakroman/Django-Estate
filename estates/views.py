@@ -1,4 +1,5 @@
 import json
+from django.core import paginator
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, request
 from django.core.mail import send_mail
@@ -7,12 +8,24 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, View
 from estates.models import Estate, SavedSearch, Wishlist
-from users.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 class PropertyListingsView(ListView):
     model = Estate
     template_name = 'estates/listings.html'
     context_object_name = 'listings'
+    paginate_by = 3
+
+    def get_ordering(self):
+        sort_option = self.request.GET.get('sort')
+
+        if sort_option == 'price_asc':
+            return ['price']
+        elif sort_option == 'price_desc':
+            return ['-price']
+
+        return []
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -72,10 +85,20 @@ class PropertyListingsView(ListView):
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by(*self.get_ordering())
 
     def get_context_data(self, **kwargs):
         context  = super().get_context_data(**kwargs)
+        paginator = Paginator(context['listings'], self.paginate_by)
+        page = self.request.GET.get('page')
+
+        try:
+            listings = paginator.page(page)
+        except PageNotAnInteger:
+            listings = paginator.page(1)
+        except EmptyPage:
+            listings = paginator.page(paginator.num_pages)
+
         if self.request.user.is_authenticated:
             current_search_criteria = {
             'search': self.request.GET.get('search_query', ''),
@@ -91,6 +114,7 @@ class PropertyListingsView(ListView):
             }
             is_search_saved = SavedSearch.objects.filter(user=self.request.user, **current_search_criteria).exists()
             context['is_search_saved'] = is_search_saved
+        context['listings'] = listings
         context['property_types'] = Estate.PROPERTY_TYPES
         context['listing_types'] = Estate.LISTING_TYPES
         return context
@@ -132,11 +156,24 @@ class WishlistView(LoginRequiredMixin, ListView):
     template_name = 'estates/wishlist.html'
     context_object_name = 'listings'
 
-    def get_queryset(self):
+    def get_ordering(self):
+        sort_option = self.request.GET.get('sort')
+        print(sort_option)
+        if sort_option == 'price_asc':
+            return ['price']
+        elif sort_option == 'price_desc':
+            return ['-price']
 
+        return super().get_ordering()
+
+
+    def get_queryset(self):
         wishlist, _ = Wishlist.objects.get_or_create(user=self.request.user)
-        products = wishlist.estates.all()
-        return super().get_queryset()
+        queryset = wishlist.estates.all()
+        ordering = self.get_ordering()
+        if ordering:
+            queryset = queryset.order_by(*ordering)
+        return queryset
 
 
 class AddRemoveWishlistView(LoginRequiredMixin, View):

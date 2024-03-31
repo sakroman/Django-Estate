@@ -9,15 +9,15 @@
         <div class="col-md-8">
             <div id="carouselExampleControls" class="carousel slide" data-bs-theme="dark">
                 <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="{{ listing.photo_main.url }}" class="w-100 img-fluid" alt="Estate Image 1">
+                    <div class="carousel-item active pe-auto">
+                        <img src="{{ listing.photo_main.url }}" class="w-100 img-fluid" style="cursor: pointer;" alt="Estate Image 1">
                     </div>
                     {% for i in "123456" %}
                     {% with attribute_name="photo_"|add:i %}
                         {% with photo=listing|getattr_filter:attribute_name %}
                             {% if photo %}
                                 <div class="carousel-item">
-                                    <img src="{{ photo.url }}" class="w-100 img-fluid" alt="Property Image">
+                                    <img src="{{ photo.url }}" class="w-100 img-fluid" style="cursor: pointer;" alt="Property Image">
                                 </div>
                             {% endif %}
                         {% endwith %}
@@ -87,25 +87,28 @@
                             <td><i class="fa-solid fa-tree"></i></i>{% if listing.garden %} Yes {% else %} No {% endif%}
                             </td>
                             <td colspan="2">
+                                {% if not listing.floor_area_sqm and not listing.land_area_sqm %}
+                                    <p>Ask agent</p>
+                                {% else %}
                                 <i class="fa-solid fa-ruler-vertical"></i></i>
                                 {% if listing.floor_area_sqm %} {{listing.floor_area_sqm}} sqm (Floor)
-                                {% else %} Ask agent {% endif %}
+                                {% else %} Ask agent (Floor){% endif %}
                                 <br>
                                 <i class="fa-solid fa-ruler-vertical"></i></i>
                                 {% if listing.land_area_sqm %} {{listing.land_area_sqm}} sqm (Land)
-                                {% else %} Ask agent {% endif %}
+                                {% else %} Ask agent (Land){% endif %}
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <section>
-
+                <p>{{listing.description|linebreaksbr}}</p>
             </section>
-            <p>{{listing.description}}</p>
 
         </div>
-        <div class="ms-4 card col-md-3">
+        <div class="ms-4 card col-md-3 h-100">
             <div class="card-body">
                 <h3 class="card-title">Contact the Seller</h3>
                 <form id="contactForm" action="{% url 'estates:contact' %}" method="post">
@@ -143,6 +146,23 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="imgModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header d-flex justify-content-between">
+            <h4 class="modal-title">View Image</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="imgContainer">
+
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+  
 <script>
     function AddRemoveWishlist(estate_id) {
         fetch('{% url "estates:add-remove-wishlist" %}', {
@@ -171,9 +191,9 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('#contactForm');
+        const images = document.getElementsByTagName('img');
         form.addEventListener('submit', function (event) {
             event.preventDefault();
-
 
             fetch(form.action, {
                 method: 'POST',
@@ -182,7 +202,7 @@
                 .then(response => {
                     if (response.ok) {
                         const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                        successModal.show()
+                        successModal.show();
 
                         form.reset();
 
@@ -192,6 +212,25 @@
                 })
                 .catch(error => console.error('Error:', error));
         });
+
+        Array.from(images).forEach(img => {
+            img.addEventListener('click', function(e) {
+                const imgModal = new bootstrap.Modal(document.getElementById('imgModal'));
+                const imgContainer = document.getElementById('imgContainer');
+                modalImg = document.createElement('img');
+                modalImg.src = img.src;
+                modalImg.classList.add('d-block');
+                modalImg.classList.add('w-100');
+                modalImg.classList.add('img-fluid');
+                
+                imgContainer.innerHTML = '';
+                imgContainer.appendChild(modalImg);
+
+                imgModal.show();
+            })
+        });
     });
+
+
 </script>
 {% endblock content %}

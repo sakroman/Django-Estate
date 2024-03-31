@@ -2,6 +2,121 @@
 {% load humanize %}
 
 {% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'users:profile' pk=request.user.pk %}" class="text-decoration-none text-dark"><i
+                        class="fa-solid fa-arrow-left"></i> Back to profile</a>
+                <div class="d-flex flex-column align-items-center text-dark text-decoration-none">
+                    <a href="{% url 'users:settings' %}" class="text-dark text-decoration-none"><i
+                            class="pb-2 fa-solid fa-gear "></i> Account settings</a>
+                    <a href="{% url 'users:logout' %}" class="text-dark text-decoration-none"><i
+                            class="fa-solid fa-door-open"></i> Log out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header mt-1 d-flex justify-content-between">
+                    <div>
+                    <h4>Saved Properties</h4>
+                    {% if listings %}
+                    <span id="listing-count">{{listings.count}} properties</span>
+                    {% endif %}
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-warning dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sort by Price
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><a class="dropdown-item" href="?sort=price_asc">Price: Low to High</a></li>
+                        <li><a class="dropdown-item" href="?sort=price_desc">Price: High to Low</a></li>
+                    </ul>
+                </div>
+                </div>
+                <div id="listingsContainer" class="card-body">
+                    {% if listings %}
+                    {% for listing in listings %}
+                    <div id="{{listing.id}}" class="item row border rounded mb-4 m-4 shadow">
+                        <div class="col-md-5 p-0">
+                            <a href="{% url 'estates:property_details' pk=listing.pk %}" class="estate-card-link">
+                                <div class="carousellisting carousel slide">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <img src="{{ listing.photo_main.url }}" class="d-block w-100" alt="Property Image">
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-7 d-flex flex-column">
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between pt-3">
+                                    <h5>{{ listing.title }}</h5>
+                                    <div class="d-flex">
+                                        <a data-id="{{ listing.id }}" id="remove-btn" class="btn p-0 me-3 text-nowrap"><i class="fa-solid fa-heart fa-xl"></i> Saved </a>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span>{{listing.property_type}}</span>
+                                    <span class="m-2"><i class="fa-solid fa-bed"></i> {{ listing.bedrooms }}</span>
+                                    <span class="m-2"><i class="fa-solid fa-toilet"></i> {{ listing.bathrooms}}</span>
+                                </div>
+                                <p>{{ listing.description|truncatechars:200 }}</p>
+                            </div>
+                            <div class="price d-flex justify-content-start mt-auto">
+                                <h4>£{{ listing.price|floatformat|intcomma }} {% if listing.listing_type == 'rent'%}pcm{%endif%}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-center">No listings found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script>
+    const removeButtons = document.querySelectorAll('#remove-btn');
 
+    removeButtons.forEach(button => {
+
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+
+            const listingId = this.getAttribute('data-id');
+            removeFromWishlist(this, listingId)
+        })
+    })
+
+    function removeFromWishlist(button, listingId) {
+        fetch('{% url "estates:add-remove-wishlist" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(listingId),
+        }).then(response => {
+            if (response.ok) {
+                button.closest('.item').remove();
+                const listingCount = document.getElementById('listing-count');
+                let currentCount = parseInt(listingCount.textContent);
+                currentCount--;
+                listingCount.textContent = currentCount + " properies";
+            } else {
+                console.log('Failed to remove from Wishlist');
+            }
+        }).catch(error => {
+            console.log('Error', error)
+        })
+    }
+</script>
 {% endblock content %}

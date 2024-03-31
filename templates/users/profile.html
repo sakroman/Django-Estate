@@ -1,4 +1,5 @@
 {% extends 'general/main.html' %}
+{% load humanize %}
 
 {% block content %}
 <div class="container rounded bg-white mt-5 mb-5">
@@ -15,13 +16,46 @@
     </div>
     <div class="row">
         <div class="col-md-8 border-right">
- 
-        </div>
-        <div class="col-md-4">
-
             <div class="container rounded bg-light shadow-lg mt-5 mb-5">
                 <div class="p-4">
-                    <h4 class="mb-4">Latest Saved Searches</h4>
+                <div class="d-flex justify-content-between mb-4">
+                    <h4 class="">Last Saved Properties</h4>
+                    <a href="{% url 'estates:saved-properties' %}" class="text-decoration-none text-dark d-flex justify-content-center">View all saved properties</a>
+                </div>
+                    <div class="row">
+                        {% for listing in wishlist_items %}
+                            {% if forloop.counter <= 3 %}
+                                <div class="col-md-4 mb-4">
+                                    <div id="{{listing.id}}" class="item card h-100 border rounded shadow">
+                                        <a href="{% url 'estates:property_details' pk=listing.pk %}" class="estate-card-link">
+                                            <img src="{{ listing.photo_main.url }}" class="card-img-top card-img" alt="Property Image">
+                                        </a>
+                                        <div class="card-body d-flex flex-column justify-content-start">
+                                            <div class="pt-3">
+                                                <h5 class="card-title">{{listing.city}}, {{listing.zipcode}}</h5>
+                                            </div>
+                                            <div class="card-text">
+                                                <span>{{listing.property_type}}</span>
+                                            </div>
+                                            <div class="price d-flex justify-content-start mt-auto">
+                                                <h4>£{{ listing.price|floatformat|intcomma }} {% if listing.listing_type == 'rent'%}pcm{%endif%}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% empty %}
+                        <p>No properties saved.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="container rounded bg-light shadow-lg mt-5 mb-5">
+                <div class="p-4">
+                    <h4 class="mb-4">Last Saved Searches</h4>
                     <ul class="list-group">
                         {% for search in searches %}
                             {% if forloop.counter <= 3 %}
@@ -36,9 +70,10 @@
                                     </a>
                                 </li>
                             {% endif %}
+                        {% empty %}
+                        <p>No saved searches found.</p>
                         {% endfor %}
                     </ul>
-                    
                     <a href="{% url 'estates:saved-searches' %}" class="text-decoration-none text-dark d-flex justify-content-center pt-3">View all saved searches</a>
                 </div>
             </div>

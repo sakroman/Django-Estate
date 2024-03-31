@@ -57,6 +57,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['searches'] = self.request.user.savedsearch_set.all().order_by('-created_at')
+        context['wishlist_items'] = self.request.user.wishlist.estates.all()
         return context
 
 
