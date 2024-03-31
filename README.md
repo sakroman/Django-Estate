@@ -62,3 +62,4 @@ python manage.py runserver
 
 Access the website at http://localhost:8000 in your web browser.
 
+# Warning! For the contact form to work you have to enter your email and password in settings.py
